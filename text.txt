@@ -1,0 +1,320 @@
+---------------------------------  question 1    -----------------------------------
+question 1 = what is express and why we use express?
+answer = 
+Express is a popular and widely-used web application framework for Node.js, used for building web applications and APIs. It provides a robust set of features for developing server-side applications, including handling HTTP requests and responses, routing, middleware support, and much more. 
+
+Express allows developers to create web applications and APIs quickly and easily, by providing a simple and flexible interface for building and managing server-side functionality. It's designed to be lightweight and fast, with a minimalistic and modular approach that makes it easy to extend and customize to fit specific project requirements.
+
+Some of the key features of Express include:
+
+- Routing: Express provides a flexible and powerful routing API that makes it easy to handle HTTP requests and map them to specific endpoints and functions.
+- Middleware support: Express provides a middleware architecture that allows you to easily add functionality to your application, such as authentication, logging, compression, and more.
+- Templating engine support: Express supports a wide variety of templating engines, allowing you to easily render dynamic content in your views.
+- Built-in HTTP utilities: Express provides a number of built-in HTTP utilities for handling requests and responses, including support for cookies, sessions, and file uploads.
+
+Overall, Express is a powerful and popular web application framework that makes it easy to build fast, scalable, and robust web applications and APIs using Node.js.
+
+
+0.const express = require("express")
+1.const app = express()
+
+
+
+
+---------------------------------  question 2    -----------------------------------
+question 2 = what is dotenv and why we use dotenv?
+answer =
+0. const dotenv = require("dotenv")
+1. we have to create .env file 
+2. configure it into server.js
+    dotenv.config()
+
+Chat GPT :-
+dotenv is a Node.js module that allows developers to load environment variables from a .env file into process.env. This makes it easy to manage and configure application-specific environment variables, such as database connection strings, API keys, and other configuration settings.
+
+dotenv is often used in web applications to keep sensitive information, such as passwords and API keys, out of the codebase and in a separate configuration file that is not tracked by version control. This makes it easier to manage different environments (such as development, staging, and production) and to keep sensitive information secure.
+
+In summary, we use dotenv to load environment variables from a .env file into our Node.js application, making it easier to manage application-specific configuration settings and to keep sensitive information secure.
+
+
+
+
+
+---------------------------------  question 3    -----------------------------------
+
+question 2 = what is dotenv and why we use dotenv?
+answer=
+//middleware
+app.use(cors());
+CORS stands for Cross-Origin Resource Sharing. It is a security feature built into modern web browsers that prevents web pages from making requests to a different domain than the one that served the web page. In other words, if a web page is hosted on one domain (e.g. example.com) and it tries to make a request to a different domain (e.g. api.example.com), the browser will block that request by default.
+
+We use CORS to allow web pages to make requests to a different domain than the one that served the web page. This is useful when building web applications that make use of APIs hosted on a different domain. By enabling CORS, we can allow web pages to make requests to those APIs, and receive responses back from them.
+
+To enable CORS, we need to add the appropriate headers to our API responses. These headers tell the browser that it's safe to allow requests from a different domain. Without these headers, the browser will block the request by default. By enabling CORS, we can build more flexible and powerful web applications that can make use of APIs hosted on different domains.
+
+
+
+
+
+
+---------------------------------  question 4    -----------------------------------
+question 4= app.use(express.json())  why it is important to write this?
+answer = 
+The line `app.use(express.json());` is configuring the Express middleware to handle incoming requests with JSON payloads. This is necessary when creating REST APIs, as it allows the server to parse the incoming JSON data and use it in the server-side code.
+
+The `express.json()` method returns a middleware function that parses incoming JSON payloads and puts the resulting JSON data in the `req.body` property. This allows you to access the JSON data in your server-side code. 
+
+By including this line of code in your application, any incoming requests with JSON payloads will automatically be parsed by Express and made available in the `req.body` object for you to use.
+
+
+
+
+
+---------------------------------  question 5   -----------------------------------
+import React ,{useState} from "react";
+import Layout from "../../components/Layout/Layout";
+import axios from "axios"
+import { useNavigate , useLocation } from "react-router-dom";
+import toast from 'react-hot-toast';
+import { useAuth } from "../../context/Auth";
+
+const Login = () => {
+  // useState
+ 
+  const[password,setPassword] = useState("");
+  const[email,setEmail] = useState("");
+  const[auth,setAuth] = useAuth();
+  //useNevigate
+  const nevigate = useNavigate();
+  // use location 
+  const location = useLocation();
+  // handel submit (when we submit the from th page refresh so to prevert it we use this method)
+  const handleSubmit= async(e)=>{
+    e.preventDefault();
+   // console.log(name,email,password,phone,address);
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API}/api/v1/auth/login`,{email,password})
+      if (res && res.data.success) {
+        //toast.success("register Successfully");
+        alert(res.data.message);
+        setAuth({
+          ...auth,
+          user: res.data.user,
+          token: res.data.token
+        })
+        localStorage.setItem('auth',JSON.stringify(res.data));
+        nevigate(location.state ||"/");
+      } else {
+       // toast.error(res.data.message);
+       alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+    console.log(process.env.REACT_APP_API);
+  }
+  return (
+    <Layout title={"Register"}>
+      <div className="login Mcontainer">
+        <h1>Login Page</h1>
+        <form onSubmit={handleSubmit}>
+       
+          <div className="form-group">
+            <input
+              type="email"
+              className="form-control"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              id="exampleInputEmail1"
+              placeholder="Enter email"
+              required
+            />
+            
+          </div>
+          <div className="form-group">
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              id="exampleInputPassword1"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div className="forgot-password">
+          <button type="submit" className="btn btn-primary">
+            Login
+          </button>
+          
+          <button type="submit" className="btn btn-primary" onClick={()=>{nevigate('/forgot-password')}}>
+            forgot-Password
+          </button>
+          </div>
+        </form>
+      </div>
+    </Layout>
+  );
+};
+
+export default Login;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React ,{useState} from "react";
+import Layout from "../../components/Layout/Layout";
+import axios from "axios"
+import { useNavigate , useLocation } from "react-router-dom";
+import toast from 'react-hot-toast';
+import { useAuth } from "../../context/Auth";
+
+const Login = () => {
+  // useState
+ 
+  const[password,setPassword] = useState("");
+  const[email,setEmail] = useState("");
+  const[auth,setAuth] = useAuth();
+  //useNevigate
+  const nevigate = useNavigate();
+  // use location 
+  const location = useLocation();
+  // handel submit (when we submit the from th page refresh so to prevert it we use this method)
+  const handleSubmit= async(e)=>{
+    e.preventDefault();
+   // console.log(name,email,password,phone,address);
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API}/api/v1/auth/login`,{email,password})
+      if (res && res.data.success) {
+        //toast.success("register Successfully");
+        alert(res.data.message);
+        setAuth({
+          ...auth,
+          user: res.data.user,
+          token: res.data.token
+        })
+        localStorage.setItem('auth',JSON.stringify(res.data));
+        nevigate(location.state ||"/");
+      } else {
+       // toast.error(res.data.message);
+       alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+    console.log(process.env.REACT_APP_API);
+  }
+  
+  const labels=document.querySelectorAll(".Myform-control label")
+ 
+labels.forEach(label=>{
+    label.innerHTML=label.innerText
+      .split('')
+      .map((letter,idx)=>`<span style="transition-delay:${idx*50}ms">${letter}</span>`)
+      //.map((letter,idx)=>`<span style="transition-delay:${idx*50}ms">${letter}</sapn>`)
+      .join('')
+})
+  return (
+    <Layout title={"Register"}>
+      <div className="Mybody">
+      <div className="login Mycontainer">
+        <h1>Login Page</h1>
+        <form onSubmit={handleSubmit}>
+       
+          <div className="form-group Myform-control">
+            <input
+              type="email"
+              //className="form-control"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              id="exampleInputEmail1"
+              //placeholder="Enter email"
+              required
+            />
+            <label htmlFor="">Email</label>
+            
+          </div>
+          <div className="form-group Myform-control">
+            <input
+              type="password"
+              //className="form-control"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              id="exampleInputPassword1"
+             // placeholder="Password"
+              required
+            />
+            <label htmlFor="">Password</label>
+          </div>
+          <div className="forgot-password">
+          <button type="submit" className="btn btn-primary Mybtn">
+            Login
+          </button>
+          
+          <button type="submit" className="btn btn-primary" onClick={()=>{nevigate('/forgot-password')}}>
+            forgot-Password
+          </button>
+          </div>
+        </form>
+      </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Login;
+
+
+
+<div className="d-flex flex-wrap Mypro-container Myflex wrapper" id="Myproduct">
+            {/* {console.log("products while maping" + products.length)} */}
+            {products?.map((p) => {
+              return (
+                <>
+                  <div className="card m-2 Mypro product-img" style={{ width: "18rem" }}>
+                    <img
+                      className="card-img-top"
+                      src={`/api/v1/product/product-photo/${p._id}`}
+                      alt={p.name}
+                    />
+                    <div className="card-body product-info">
+                      <div className="Mytext Myflex product-text">
+                        <h1 className="card-title">{p.name}</h1>
+                        { <p className="card-text">
+                        {p.description.substring(0, 30)}
+                      </p> }
+                    </div>
+                      
+                      
+                      <div className="Mytext Myflex product-price-btn">
+                      <p className="price"><span> {p.price}<span/>$</p>
+                      <button  onClick={()=>{
+                        setCart([...cart,p])
+                        localStorage.setItem("cart",JSON.stringify([...cart,p]));
+                        alert("Item added to cart");
+                      }}>Add to Cart</button>
+                      <button
+                        class="btn btn-secondary"
+                        onClick={() => navigate(`/product/${p.slug}`)}
+                      >
+                        More Details
+                      </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+          </div>
